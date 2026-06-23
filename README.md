@@ -38,7 +38,7 @@ Edit the configuration block at the start of `lab_creator.ps1` before the first 
 
 ## Before You Begin
 
-1. Create three virtual machines on an isolated virtual network.
+1. Create three virtual machines on the same isolated virtual network. A VMware NAT network or a VirtualBox NAT Network is suitable; do not use a production network.
 2. Install the operating systems listed above and the guest tools for your hypervisor.
 3. Reboot each virtual machine after installing its guest tools.
 4. Copy the same version of `lab_creator.ps1` to each machine.
@@ -96,7 +96,7 @@ On the second Windows client VM, select **S**.
 1. First run: renames the computer to `VOYAGER-01`, applies the static address, then reboots.
 2. Second run: configures DNS, joins `STARFLEET.local`, and completes workstation setup.
 
-If a workstation does not join the domain, confirm that `STARBASE-1` has completed its final run, all VMs are on the same isolated virtual network, and the domain controller is reachable by name.
+If a workstation does not join the domain, confirm that `STARBASE-1` has completed its final run, all VMs use the same virtual NAT/NAT Network, and the domain controller is reachable by name.
 
 ## Menu Reference
 
