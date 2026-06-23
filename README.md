@@ -23,6 +23,19 @@ The configured domain is `STARFLEET.local`.
 
 Data can be renamed in the configuration block. The script uses the selected service-account logon name as the SQL SPN owner while retaining the `SQLService` SPN class.
 
+## Customization
+
+Edit the configuration block at the start of `lab_creator.ps1` before the first run. Use the variables below to adapt the lab without changing the provisioning functions.
+
+| What to customize | Variables |
+| --- | --- |
+| Domain identity | `LabDisplayName`, `LabRootName`, `LabTld` |
+| Host names | `DCName`, `Workstation1Name`, `Workstation2Name` |
+| Network suffixes | `DCLastOctet`, `Workstation1Octet`, `Workstation2Octet`, `GatewayLastOctet` |
+| Crew accounts | `User1*`, `User2*`, `User3*` |
+| SQL service account | `ServiceAccount*` |
+| Local and directory-recovery passwords | `LocalAdministratorPassword`, `DirectoryServicesRestoreModePassword` |
+
 ## Before You Begin
 
 1. Create three virtual machines on an isolated virtual network.
