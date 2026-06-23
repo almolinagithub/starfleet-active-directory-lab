@@ -1,32 +1,121 @@
 # Starfleet Active Directory Lab
 
-A Windows Active Directory practice lab with a Star Trek theme. The primary script provisions a domain controller, two workstations, sample accounts, and supporting lab configuration.
+A three-machine Windows Active Directory training lab with a Star Trek theme. `lab_creator.ps1` configures the domain controller, workstations, sample directory accounts, certificate services, DNS, and supporting lab tools.
 
-## Configuration
+## Lab Manifest
 
-Before running the script, edit the configuration block at the top of `lab_creator.ps1`.
+| Role | Host name | Operating system target | Configuration runs |
+| --- | --- | --- | --- |
+| Domain controller | `STARBASE-1` | Windows Server 2019 or 2022, Desktop Experience | 3 |
+| Workstation 1 | `ENTERPRISE-01` | Windows 10 Pro or Enterprise, Desktop Experience | 2 |
+| Workstation 2 | `VOYAGER-01` | Windows 10 Pro or Enterprise, Desktop Experience | 2 |
 
-- Domain: `STARFLEET.local`
-- Domain controller: `ENTERPRISE-DC`
-- Workstations: `ENTERPRISE-01` and `VOYAGER-01`
-- Lab accounts: James T. Kirk, Spock, Leonard McCoy, and Data
+The configured domain is `STARFLEET.local`.
 
-The host names, account names, passwords, and IP-address suffixes are configurable from this block. The service account may be renamed; its SQL service principal names remain associated with the selected account.
+## Crew Accounts
 
-## Requirements
+| Character | Logon name | Lab role |
+| --- | --- | --- |
+| James T. Kirk | `jkirk` | Standard domain user |
+| Spock | `spock` | Domain administrator for the lab scenario |
+| Leonard McCoy | `lmccoy` | Privileged account used to join workstations to the domain |
+| Data | `data` | SQL service account and SPN owner |
 
-- Windows Server or Windows workstation virtual machines suitable for an Active Directory lab
-- PowerShell running as Administrator
-- Isolated lab environment only
+Data can be renamed in the configuration block. The script uses the selected service-account logon name as the SQL SPN owner while retaining the `SQLService` SPN class.
 
-## Running the Lab
+## Customization
 
-Run `lab_creator.ps1` as Administrator on the relevant virtual machine, then select the corresponding menu option for the domain controller or a workstation. Some steps reboot the computer; rerun the script when prompted.
+Edit the configuration block at the start of `lab_creator.ps1` before the first run. Use the variables below to adapt the lab without changing the provisioning functions.
+
+| What to customize | Variables |
+| --- | --- |
+| Domain identity | `LabDisplayName`, `LabRootName`, `LabTld` |
+| Host names | `DCName`, `Workstation1Name`, `Workstation2Name` |
+| Network suffixes | `DCLastOctet`, `Workstation1Octet`, `Workstation2Octet`, `GatewayLastOctet` |
+| Crew accounts | `User1*`, `User2*`, `User3*` |
+| SQL service account | `ServiceAccount*` |
+| Local and directory-recovery passwords | `LocalAdministratorPassword`, `DirectoryServicesRestoreModePassword` |
+
+## Before You Begin
+
+1. Create three virtual machines on the same isolated virtual network. A VMware NAT network or a VirtualBox NAT Network is suitable; do not use a production network.
+2. Install the operating systems listed above and the guest tools for your hypervisor.
+3. Reboot each virtual machine after installing its guest tools.
+4. Copy the same version of `lab_creator.ps1` to each machine.
+5. Edit the configuration block at the beginning of the script before the first run. This controls the domain, host names, IP-address suffixes, account names, and passwords.
+
+To download the script from this repository on a lab VM:
+
+```powershell
+Invoke-WebRequest `
+  -Uri 'https://raw.githubusercontent.com/almolinagithub/starfleet-active-directory-lab/main/lab_creator.ps1' `
+  -OutFile '.\lab_creator.ps1'
+```
+
+Run it from an elevated PowerShell session:
+
+```powershell
+PowerShell -ExecutionPolicy Bypass -File .\lab_creator.ps1
+```
+
+## Network Plan
+
+The script uses the first three octets of the machine's existing IPv4 address and applies the configured final octet.
+
+| System | Address | DNS after configuration |
+| --- | --- | --- |
+| `STARBASE-1` | `x.x.x.250` | `127.0.0.1` |
+| `ENTERPRISE-01` | `x.x.x.220` | Domain controller address |
+| `VOYAGER-01` | `x.x.x.221` | Domain controller address |
+
+The default gateway is `x.x.x.1` and the subnet mask is `255.255.255.0`. Change the IP suffix variables in the configuration block if those values conflict with your isolated network.
+
+## Deployment Sequence
+
+### 1. Establish the domain controller
+
+On the server VM, select **D** from the menu.
+
+1. First run: renames the server to `STARBASE-1`, assigns its static address, then reboots.
+2. Second run: installs and promotes the Active Directory domain services environment, then reboots.
+3. Third run: creates the Starfleet accounts, configures certificate services, service principal names, Group Policy, DNS, and supporting lab content.
+
+Wait for the final reboot before configuring either workstation.
+
+### 2. Configure Enterprise workstation
+
+On the first Windows client VM, select **P**.
+
+1. First run: renames the computer to `ENTERPRISE-01`, applies the static address, then reboots.
+2. Second run: configures DNS, joins `STARFLEET.local`, and completes workstation setup.
+
+### 3. Configure Voyager workstation
+
+On the second Windows client VM, select **S**.
+
+1. First run: renames the computer to `VOYAGER-01`, applies the static address, then reboots.
+2. Second run: configures DNS, joins `STARFLEET.local`, and completes workstation setup.
+
+If a workstation does not join the domain, confirm that `STARBASE-1` has completed its final run, all VMs use the same virtual NAT/NAT Network, and the domain controller is reachable by name.
+
+## Menu Reference
+
+| Option | Action |
+| --- | --- |
+| `D` | Build or continue the `STARBASE-1` domain controller setup |
+| `P` | Build or continue the `ENTERPRISE-01` workstation setup |
+| `S` | Build or continue the `VOYAGER-01` workstation setup |
+| `N` | Run the lab security-configuration function only |
+| `F` | Recreate the lab Group Policy settings |
+| `K` | Reconfigure SQL service principal names |
+| `A` | Run the certificate-authority configuration function |
+| `H` | Download and extract the SharpHound archive |
+| `X` | Exit |
 
 ## Validation
 
-The script has been parsed successfully with PowerShell 7.6.1.
+`lab_creator.ps1` has been parsed successfully with PowerShell 7.6.1. It must still be run and tested on Windows because it uses Windows-only Active Directory, networking, and system-management commands.
 
 ## Safety
 
-This script deliberately changes security settings for a controlled training environment. Do not run it on production systems or a network that you do not own and administer.
+This training script intentionally changes security settings, permissions, and system services. Use it only on virtual machines that you own and administer, on an isolated network, and never on a production system.
