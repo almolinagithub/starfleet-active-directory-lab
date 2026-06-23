@@ -39,10 +39,12 @@ Edit the configuration block at the start of `lab_creator.ps1` before the first 
 ## Before You Begin
 
 1. Create three virtual machines on the same isolated virtual network. A VMware NAT network or a VirtualBox NAT Network is suitable; do not use a production network.
-2. Install the operating systems listed above and the guest tools for your hypervisor.
-3. Reboot each virtual machine after installing its guest tools.
-4. Copy the same version of `lab_creator.ps1` to each machine.
-5. Edit the configuration block at the beginning of the script before the first run. This controls the domain, host names, IP-address suffixes, account names, and passwords.
+2. Keep DHCP enabled on that virtual NAT network for the initial boot of every VM. The script derives the network prefix from the current DHCP-assigned IPv4 address, then applies static addresses.
+3. Exclude or reserve the static lab addresses (`.220`, `.221`, and `.250`) in the DHCP scope to prevent address conflicts.
+4. Install the operating systems listed above and the guest tools for your hypervisor.
+5. Reboot each virtual machine after installing its guest tools.
+6. Copy the same version of `lab_creator.ps1` to each machine.
+7. Edit the configuration block at the beginning of the script before the first run. This controls the domain, host names, IP-address suffixes, account names, and passwords.
 
 To download the script from this repository on a lab VM:
 
@@ -69,6 +71,12 @@ The script uses the first three octets of the machine's existing IPv4 address an
 | `VOYAGER-01` | `x.x.x.221` | Domain controller address |
 
 The default gateway is `x.x.x.1` and the subnet mask is `255.255.255.0`. Change the IP suffix variables in the configuration block if those values conflict with your isolated network.
+
+## Windows Security in the Lab
+
+The standard deployment options (`D`, `P`, and `S`) invoke the script's lab security-configuration function before provisioning. It disables Microsoft Defender antivirus, firewall profiles, UAC-related protections, and automatic updates to create the intended practice environment.
+
+Use this only on the isolated training VMs. Do not disable Windows antivirus or other endpoint protection on a host machine, production computer, or any network outside the dedicated lab.
 
 ## Deployment Sequence
 
