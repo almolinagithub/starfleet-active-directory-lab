@@ -119,3 +119,24 @@ If a workstation does not join the domain, confirm that `STARBASE-1` has complet
 ## Safety
 
 This training script intentionally changes security settings, permissions, and system services. Use it only on virtual machines that you own and administer, on an isolated network, and never on a production system.
+
+## Attribution
+
+`lab_creator.ps1` is derived from [PimpmyADLab](https://github.com/Dewalt-arch/pimpmyadlab) by **Dewalt-arch**, originally written as the Active Directory lab build script for the [TCM-Academy Practical Ethical Hacker course](https://academy.tcm-sec.com/p/practical-ethical-hacking-the-complete-course).
+
+This project retains the core provisioning logic, function structure, and lab design of the original work, re-themed from a Marvel universe to a Star Trek universe. Full credit goes to the original authors and contributors.
+
+### Original Authors & Contributors
+
+| GitHub | Role |
+| --- | --- |
+| [@Dewalt-arch](https://github.com/Dewalt-arch) | Original author & primary maintainer (8 commits) |
+| [@CarlosAmericano](https://github.com/CarlosAmericano) | Contributor (2 commits) |
+| [@NevaSec](https://github.com/NevaSec) | Contributor (2 commits) |
+| [@jmeliendrez](https://github.com/jmeliendrez) (pr0tag0nist) | Contributor & code author (1 commit) |
+| [@WodenSec](https://github.com/WodenSec) | Code contributor |
+
+### Special Thanks (from original project)
+
+- **ToddAtLarge** (PNPT Certified) — for the NukeDefender script
+- **Yaseen** (PNPT Certified) — for Alpha/Beta Testing
