@@ -13,7 +13,7 @@ $Global:LabDomainNetbios    = $Global:LabRootName
 $Global:DomainDN            = (($Global:LabDomainFqdn).Split(".") | ForEach-Object { "DC=$_" }) -join ","
 
 # Host names. Update these before building the corresponding virtual machines.
-$Global:DCName              = "ENTERPRISE-DC"
+$Global:DCName              = "STARBASE-1"
 $Global:Workstation1Name    = "ENTERPRISE-01"
 $Global:Workstation2Name    = "VOYAGER-01"
 
